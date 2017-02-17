@@ -1,0 +1,5 @@
+branches:
+  dev(elop)?(ment)?$:
+    tag: ci
+ignore:
+  sha: []
