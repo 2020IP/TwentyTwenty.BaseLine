@@ -6,7 +6,7 @@ test: off
 deploy:
   - provider: NuGet
     api_key:
-      secure: BSOZdVuP4kYGBHI+9UHHsmTinFLVyzvsJy1HDMbEok9URhK1Fg7yOWLG3mk5AahQ
+      secure: 6LqavZsVwaAsuw6SK7XKQRuMzqb9pedzqVK7AI0+j3w51bN1FOu7Fi2l2Fj6bmu/
     artifact: /.*\.nupkg/
     on:
       appveyor_repo_tag: true

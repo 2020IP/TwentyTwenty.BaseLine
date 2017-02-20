@@ -48,8 +48,6 @@ Task("Package")
     .Does(() => {
         //GitLink("./", new GitLinkSettings { ArgumentCustomization = args => args.Append("-include Specify,Specify.Autofac") });
 
-        //GenerateReleaseNotes();
-
         var settings = new DotNetCorePackSettings
         {
             OutputDirectory = outputDir,
@@ -66,6 +64,7 @@ Task("Package")
 
         if (AppVeyor.IsRunningOnAppVeyor)
         {
+            GenerateReleaseNotes();
             foreach (var file in GetFiles(outputDir + "**/*"))
                 AppVeyor.UploadArtifact(file.FullPath);
         }
