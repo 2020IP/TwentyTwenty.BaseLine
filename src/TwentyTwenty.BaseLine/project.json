@@ -1,5 +1,17 @@
 {
   "version": "1.0.0-*",
+  "title": "20|20 BaseLine",
+  "description": "20|20's grab bag of generic utilities and extension methods for .Net development",
+  "authors": [ "2020IP" ],
+  "packOptions": {
+    "projectUrl": "https://github.com/2020IP/TwentyTwenty.BaseLine",
+    "iconUrl": "https://avatars3.githubusercontent.com/u/15891935?v=3&s=64",
+    "licenseUrl": "https://raw.githubusercontent.com/2020IP/TwentyTwenty.BaseLine/master/LICENSE",
+    "repository": {
+      "type": "git",
+      "url": "git://github.com/2020IP/TwentyTwenty.BaseLine"
+    }
+  },
   "buildOptions": {
     "debugType": "portable",
     "compile": [ "**/*.cs", "../CommonAssemblyInfo.cs"]
