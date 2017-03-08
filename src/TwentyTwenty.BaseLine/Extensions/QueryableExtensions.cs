@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 using TwentyTwenty.BaseLine;
 
 namespace System.Linq
@@ -30,6 +31,17 @@ namespace System.Linq
             return (IOrderedQueryable<TEntity>)method
                     .MakeGenericMethod(typeof(TEntity), prop.PropertyType)
                     .Invoke(null, new object[] { queryable, lambda });
+        }
+
+        public static PagedList<TEntity> ToPagedList<TEntity>(this IQueryable<TEntity> queryable, int pageNumber,
+            int pageSize, SortSpec sortSpec = null)
+        {
+            if (sortSpec != null)
+            {
+                queryable = queryable.OrderBy(sortSpec);
+            }
+
+            return new PagedList<TEntity>(queryable, pageNumber, pageSize);
         }
     }
 }
