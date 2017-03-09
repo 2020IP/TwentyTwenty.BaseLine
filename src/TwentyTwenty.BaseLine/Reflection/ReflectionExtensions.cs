@@ -18,7 +18,6 @@ namespace TwentyTwenty.BaseLine
                 memberExpression = expression.Body as MemberExpression;
             }
 
-
             if (enforceMemberExpression && memberExpression == null) throw new ArgumentException("Not a member access", "member");
             return memberExpression;
         }
