@@ -164,5 +164,28 @@ namespace System.Linq
         {
             return enumerable == null || !enumerable.Any();
         }
+
+        /// <summary>
+        /// Converts a sequence of items to a dictionary without regard to duplicates.
+        /// </summary>
+        /// <param name="enumerable">The sequence of items.</param>
+        /// <param name="keySelector">Function to select the key</param>
+        /// <returns>The Dictionary</returns>
+        public static Dictionary<TKey, T> SafeToDictionary<TKey, T>(this IEnumerable<T> items, Func<T, TKey> keySelector)
+        {            
+            var dict = new Dictionary<TKey, T>();
+
+            if (items == null)
+            {
+                return dict;
+            }
+
+            foreach (var itm in items)
+            {
+                dict[keySelector(itm)] = itm;
+            }
+
+            return dict;
+        }
     }
 }
