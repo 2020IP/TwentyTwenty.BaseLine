@@ -164,5 +164,13 @@ namespace System.Linq
         {
             return enumerable == null || !enumerable.Any();
         }
+
+        public static IEnumerable<string> Trim(this IList<string> list)
+        {
+            int start = 0, end = list.Count - 1;
+            while (start < end && string.IsNullOrWhiteSpace(list[start])) start++;
+            while (end >= start && string.IsNullOrWhiteSpace(list[end])) end--;
+            return list.Skip(start).Take(end - start + 1);
+        }
     }
 }
