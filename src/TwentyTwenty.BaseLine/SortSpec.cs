@@ -1,3 +1,7 @@
+using System;
+using System.Linq.Expressions;
+using System.Reflection;
+
 namespace TwentyTwenty.BaseLine
 {
     public enum ListSortDirection
@@ -15,5 +19,12 @@ namespace TwentyTwenty.BaseLine
         }
         public string Member { get; set; }
         public ListSortDirection SortDirection { get; set; }
+
+        public static SortSpec Create<T>(Expression<Func<T, object>> expression, 
+            ListSortDirection direction = ListSortDirection.Descending)
+        {
+            var name = expression.GetName();
+            return new SortSpec(name, direction);
+        }
     }
 }

@@ -21,5 +21,30 @@ namespace TwentyTwenty.BaseLine
             if (enforceMemberExpression && memberExpression == null) throw new ArgumentException("Not a member access", "member");
             return memberExpression;
         }
+
+        public static string GetName<T>(this Expression<Func<T, object>> expression)
+        {
+            if (expression == null)
+            {
+                throw new ArgumentNullException(nameof(expression));
+            }
+
+            MemberExpression expr = null;
+
+            if (expression.Body is MemberExpression)
+            {
+                expr = (MemberExpression)expression.Body;
+            }
+            else if (expression.Body is UnaryExpression)
+            {
+                expr = (MemberExpression)((UnaryExpression)expression.Body).Operand;
+            }
+            else
+            {
+                throw new ArgumentException($"Expression '{expression}' not supported.", "expression");
+            }
+
+            return expr.Member.Name;
+        }
     }
 }
