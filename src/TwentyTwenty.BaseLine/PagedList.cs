@@ -13,6 +13,22 @@ namespace TwentyTwenty.BaseLine
 
         public PagedList(IQueryable<T> source, int pageNumber, int pageSize)
         {
+            SetPage(pageNumber, pageSize);
+            var skip = (pageNumber - 1) * pageSize;    
+            TotalItems = source.Count();
+            Items = new List<T>(source.Skip(skip).Take(pageSize).ToList());
+        }
+
+        public PagedList(IEnumerable<T> source, int pageNumber, int pageSize)
+        {
+            SetPage(pageNumber, pageSize);
+            var skip = (pageNumber - 1) * pageSize;
+            TotalItems = source.Count();
+            Items = new List<T>(source.Skip(skip).Take(pageSize).ToList());
+        }
+
+        private void SetPage(int pageNumber, int pageSize)
+        {
             if (pageSize == 0)
             {
                 throw new ArgumentOutOfRangeException("pageSize", "Page size can not be 0");
@@ -22,12 +38,8 @@ namespace TwentyTwenty.BaseLine
                 throw new ArgumentOutOfRangeException("pageNumber", "Page number can not be 0");
             }
             
-            var skip = (pageNumber - 1) * pageSize;
             CurrentPage = pageNumber;
-            PageSize = pageSize;            
-            TotalItems = source.Count();
-
-            Items = new List<T>(source.Skip(skip).Take(pageSize).ToList());
+            PageSize = pageSize;  
         }
         
         public int PageSize { get; set; }
