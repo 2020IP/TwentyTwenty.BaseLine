@@ -1,10 +1,32 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Reflection;
+using TwentyTwenty.BaseLine;
 
 namespace System.Linq
 {
     public static class EnumerableExtensions
     {
+        public static bool SafeSequenceEqual<T>(this IEnumerable<T> first, IEnumerable<T> second)
+        {
+            var isEqual = false;
+
+            if (first == null && second == null)
+            {
+                isEqual = true;
+            }
+            else if (first != null && second != null)
+            {
+                if (first.SequenceEqual(second))
+                {
+                    isEqual = true;
+                }
+            }
+
+            return isEqual;
+        }
+        
         /// <summary>
         /// Adds an item to a list if it doesn't already contain the item.
         /// </summary>
