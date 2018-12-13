@@ -2,9 +2,9 @@ version: 1.0.{build}
 image: Visual Studio 2015
 before_build:
   - cmd: dotnet --version
-  - cmd: dotnet restore ./src/TwentyTwenty.BaseLine.csproj
+  - cmd: dotnet restore ./src/TwentyTwenty.BaseLine/TwentyTwenty.BaseLine.csproj
 build_script:
-  - cmd: dotnet publish ./src/TwentyTwenty.BaseLine.csproj
+  - cmd: dotnet publish ./src/TwentyTwenty.BaseLine/TwentyTwenty.BaseLine.csproj
 test: off
 deploy:
   - provider: NuGet
