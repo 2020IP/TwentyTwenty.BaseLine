@@ -26,6 +26,24 @@ namespace System.Linq
 
             return isEqual;
         }
+
+        /// <summary>
+        /// Determines whether two sequences contain the same items. Null-safe comparison.
+        /// </summary>
+        /// <param name="first">An IEnumerable<T> to compare to second</param>
+        /// <param name="second">An IEnumerable<T> to compare to the first sequence.</param>
+        /// <typeparam name="T">The type of the elements of the input sequences.</typeparam>
+        /// <returns>true if the two source sequences are of equal length and contain equal elements, default equality comparer for their type; otherwise, false.</returns>
+        public static bool SequenceEqualUnordered<T>(this IEnumerable<T> first, IEnumerable<T> second)
+        {
+            if (first == null)
+                return second == null;
+            if (second == null)
+                return false;
+
+            return first.Count() == second.Count() 
+                && (!first.Except(second).Any() || !second.Except(first).Any());
+        }
         
         /// <summary>
         /// Adds an item to a list if it doesn't already contain the item.

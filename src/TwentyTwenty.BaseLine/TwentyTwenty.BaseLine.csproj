@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>20|20's grab bag of generic utilities and extension methods for .Net development</Description>
+    <AssemblyTitle>20|20 BaseLine</AssemblyTitle>
+    <VersionPrefix>$(SemVer)</VersionPrefix>
+    <Authors>2020IP</Authors>
+    <TargetFrameworks>netstandard1.3</TargetFrameworks>
+    <AssemblyName>TwentyTwenty.BaseLine</AssemblyName>
+    <PackageId>TwentyTwenty.BaseLine</PackageId>
+    <PackageIconUrl>https://avatars3.githubusercontent.com/u/15891935?v=3&amp;s=64</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/2020IP/TwentyTwenty.BaseLine</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/2020IP/TwentyTwenty.BaseLine/master/LICENSE</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>git://github.com/2020IP/TwentyTwenty.BaseLine</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Collections.Concurrent" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
+    <PackageReference Include="System.Linq.Queryable" Version="4.3.0" />
+  </ItemGroup>
+
+</Project>
