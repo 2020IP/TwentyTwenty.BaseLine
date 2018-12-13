@@ -5,7 +5,7 @@
     <AssemblyTitle>20|20 BaseLine</AssemblyTitle>
     <VersionPrefix>$(SemVer)</VersionPrefix>
     <Authors>2020IP</Authors>
-    <TargetFrameworks>netstandard1.3</TargetFrameworks>
+    <TargetFramework>netstandard1.3</TargetFramework>
     <AssemblyName>TwentyTwenty.BaseLine</AssemblyName>
     <PackageId>TwentyTwenty.BaseLine</PackageId>
     <PackageIconUrl>https://avatars3.githubusercontent.com/u/15891935?v=3&amp;s=64</PackageIconUrl>
