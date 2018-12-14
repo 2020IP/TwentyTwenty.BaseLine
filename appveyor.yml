@@ -1,9 +1,10 @@
 version: 1.0.{build}
-image: Visual Studio 2015
+image: Visual Studio 2017
+install:
+  - choco install gitversion.portable -pre -y
 before_build:
-  - cmd: nuget install GitVersion.CommandLine.DotNetCore -Version 4.0.0 -OutputDirector tools
   - cmd: dotnet --version
-  - cmd: dotnet tools/GitVersion.CommandLine.DotNetCore.4.0.0/tools/GitVersion.dll /l console /output buildserver
+  - ps: gitversion /l console /output buildserver /updateAssemblyInfo
   - cmd: dotnet restore ./src/TwentyTwenty.BaseLine/TwentyTwenty.BaseLine.csproj
 build_script:
   - cmd: dotnet pack ./src/TwentyTwenty.BaseLine/TwentyTwenty.BaseLine.csproj --no-restore -c Release /p:SemVer=%GitVersion_NuGetVersion%
