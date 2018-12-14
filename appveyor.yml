@@ -1,10 +1,12 @@
 version: 1.0.{build}
 image: Visual Studio 2015
 before_build:
+  - cmd: nuget install GitVersion.CommandLine.DotNetCore -Version 4.0.0 -OutputDirector tools
   - cmd: dotnet --version
+  - cmd: dotnet tools/GitVersion.CommandLine.DotNetCore.4.0.0/tools/GitVersion.dll /l console /output buildserver
   - cmd: dotnet restore ./src/TwentyTwenty.BaseLine/TwentyTwenty.BaseLine.csproj
 build_script:
-  - cmd: dotnet pack ./src/TwentyTwenty.BaseLine/TwentyTwenty.BaseLine.csproj --no-restore -c Release
+  - cmd: dotnet pack ./src/TwentyTwenty.BaseLine/TwentyTwenty.BaseLine.csproj --no-restore -c Release /p:SemVer=%GitVersion_NuGetVersion%
 test: off
 deploy:
   - provider: NuGet
@@ -15,7 +17,7 @@ deploy:
       appveyor_repo_tag: true
 
   - provider: GitHub
-    release: v$(GitVersion_SemVer)
+    release: "%GitVersion_NuGetVersion%"
     description: 'TwentyTwenty.BaseLine'
     auth_token:
       secure: fd/+7iqe48Pb5+TSjRLgl4uEP4FvKjAv8xs0MI+cgYPJ3QX2/cBdfJt2E6fbwHFr

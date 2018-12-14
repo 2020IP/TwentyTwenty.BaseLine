@@ -1,5 +1,5 @@
 #tool "nuget:?package=GitReleaseNotes"
-#tool "nuget:?package=GitVersion.CommandLine"
+#tool "nuget:?package=GitVersion.CommandLine.DotNetCore"
 
 var target = Argument("target", "Default");
 var outputDir = "./artifacts/";
