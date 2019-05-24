@@ -229,6 +229,30 @@ namespace System.Linq
             return dict;
         }
 
+        /// <summary>
+        /// Converts a sequence of items to a dictionary without regard to duplicates.
+        /// </summary>
+        /// <param name="enumerable">The sequence of items.</param>
+        /// <param name="keySelector">Function to select the key</param>
+        /// <param name="valueSelector">Function to select the value</param>
+        /// <returns>The Dictionary</returns>
+        public static Dictionary<TKey, TValue> SafeToDictionary<TKey, TValue, T>(this IEnumerable<T> items, Func<T, TKey> keySelector, Func<T, TValue> valueSelector)
+        {
+            var dict = new Dictionary<TKey, TValue>();
+
+            if (items == null)
+            {
+                return dict;
+            }
+
+            foreach (var itm in items)
+            {
+                dict[keySelector(itm)] = valueSelector(itm);
+            }
+
+            return dict;
+        }
+
         public static IEnumerable<string> Trim(this IList<string> list)
         {
             int start = 0, end = list.Count - 1;
