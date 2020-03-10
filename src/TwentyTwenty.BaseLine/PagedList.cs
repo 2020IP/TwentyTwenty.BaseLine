@@ -14,7 +14,7 @@ namespace TwentyTwenty.BaseLine
         public PagedList(IQueryable<T> source, int pageNumber, int pageSize)
         {
             SetPage(pageNumber, pageSize);
-            var skip = (pageNumber - 1) * pageSize;    
+            var skip = (pageNumber - 1) * pageSize;
             TotalItems = source.Count();
             Items = new List<T>(source.Skip(skip).Take(pageSize).ToList());
         }
@@ -48,7 +48,7 @@ namespace TwentyTwenty.BaseLine
         public IList<T> Items { get; set; }
 
         public int TotalPages
-            => (int)Math.Ceiling((decimal)TotalItems / PageSize);        
+            => (int)Math.Ceiling((decimal)TotalItems / Math.Max(PageSize, 1));
         public bool HasPreviousPage
             => CurrentPage > 1;
         public bool HasNextPage
