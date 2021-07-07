@@ -99,11 +99,30 @@ namespace TwentyTwenty.BaseLine.Tests.RateLimiting
         }
 
         [Fact(Timeout = ConsumeTimeout)]
+        public void ConsumeAsyncWhenTokenAvailable()
+        {
+            _refillStrategy.AddToken();
+            _bucket.ConsumeAsync().Wait();
+
+            _sleepStrategy.Verify(s => s.Sleep(), Times.Never());
+        }
+
+        [Fact(Timeout = ConsumeTimeout)]
         public void ConsumeWhenTokensAvailable()
         {
             const int tokensToConsume = 2;
             _refillStrategy.AddTokens(tokensToConsume);
             _bucket.Consume(tokensToConsume);
+
+            _sleepStrategy.Verify(s => s.Sleep(), Times.Never());
+        }
+
+        [Fact(Timeout = ConsumeTimeout)]
+        public void ConsumeAsyncWhenTokensAvailable()
+        {
+            const int tokensToConsume = 2;
+            _refillStrategy.AddTokens(tokensToConsume);
+            _bucket.ConsumeAsync(tokensToConsume).Wait();
 
             _sleepStrategy.Verify(s => s.Sleep(), Times.Never());
         }
@@ -122,6 +141,19 @@ namespace TwentyTwenty.BaseLine.Tests.RateLimiting
         }
 
         [Fact(Timeout = ConsumeTimeout)]
+        public void ConsumeAsyncWhenTokenUnavailable()
+        {
+            _sleepStrategy
+                .Setup(s => s.Sleep())
+                .Callback(_refillStrategy.AddToken)
+                .Verifiable();
+
+            _bucket.ConsumeAsync().Wait();
+
+            _sleepStrategy.Verify();
+        }
+
+        [Fact(Timeout = ConsumeTimeout)]
         public void ConsumeWhenTokensUnavailable()
         {
             const int tokensToConsume = 7;
@@ -131,6 +163,20 @@ namespace TwentyTwenty.BaseLine.Tests.RateLimiting
                 .Verifiable();
 
             _bucket.Consume(tokensToConsume);
+
+            _sleepStrategy.Verify();
+        }
+
+        [Fact(Timeout = ConsumeTimeout)]
+        public void ConsumeAsyncWhenTokensUnavailable()
+        {
+            const int tokensToConsume = 7;
+            _sleepStrategy
+                .Setup(s => s.Sleep())
+                .Callback(() => _refillStrategy.AddTokens(tokensToConsume))
+                .Verifiable();
+
+            _bucket.ConsumeAsync(tokensToConsume).Wait();
 
             _sleepStrategy.Verify();
         }
