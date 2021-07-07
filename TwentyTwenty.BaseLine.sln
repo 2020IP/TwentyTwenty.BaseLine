@@ -7,6 +7,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B24C04AA-739
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwentyTwenty.BaseLine", "src\TwentyTwenty.BaseLine\TwentyTwenty.BaseLine.csproj", "{949D9C42-4EC9-4F6C-AFE7-F0F70DDB56AB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{7A8BC93C-05C5-4EEE-944F-364AED32DE46}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwentyTwenty.BaseLine.Tests", "test\TwentyTwenty.BaseLine.Tests\TwentyTwenty.BaseLine.Tests.csproj", "{83EA4B8B-C5EF-456B-A4A2-CF9DB07B81D8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,8 +36,21 @@ Global
 		{949D9C42-4EC9-4F6C-AFE7-F0F70DDB56AB}.Release|x64.Build.0 = Release|Any CPU
 		{949D9C42-4EC9-4F6C-AFE7-F0F70DDB56AB}.Release|x86.ActiveCfg = Release|Any CPU
 		{949D9C42-4EC9-4F6C-AFE7-F0F70DDB56AB}.Release|x86.Build.0 = Release|Any CPU
+		{83EA4B8B-C5EF-456B-A4A2-CF9DB07B81D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83EA4B8B-C5EF-456B-A4A2-CF9DB07B81D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83EA4B8B-C5EF-456B-A4A2-CF9DB07B81D8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{83EA4B8B-C5EF-456B-A4A2-CF9DB07B81D8}.Debug|x64.Build.0 = Debug|Any CPU
+		{83EA4B8B-C5EF-456B-A4A2-CF9DB07B81D8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{83EA4B8B-C5EF-456B-A4A2-CF9DB07B81D8}.Debug|x86.Build.0 = Debug|Any CPU
+		{83EA4B8B-C5EF-456B-A4A2-CF9DB07B81D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83EA4B8B-C5EF-456B-A4A2-CF9DB07B81D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83EA4B8B-C5EF-456B-A4A2-CF9DB07B81D8}.Release|x64.ActiveCfg = Release|Any CPU
+		{83EA4B8B-C5EF-456B-A4A2-CF9DB07B81D8}.Release|x64.Build.0 = Release|Any CPU
+		{83EA4B8B-C5EF-456B-A4A2-CF9DB07B81D8}.Release|x86.ActiveCfg = Release|Any CPU
+		{83EA4B8B-C5EF-456B-A4A2-CF9DB07B81D8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{949D9C42-4EC9-4F6C-AFE7-F0F70DDB56AB} = {B24C04AA-739A-4AAB-B60E-6FA5BB07355F}
+		{83EA4B8B-C5EF-456B-A4A2-CF9DB07B81D8} = {7A8BC93C-05C5-4EEE-944F-364AED32DE46}
 	EndGlobalSection
 EndGlobal
