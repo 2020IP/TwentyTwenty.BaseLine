@@ -1,15 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Security.Cryptography;
-using TwentyTwenty.BaseLine;
 
 namespace System.Linq
 {
     public static class EnumerableExtensions
     {
         public static bool SafeSequenceEqual<T>(this IEnumerable<T> first, IEnumerable<T> second)
+        {
+            return SafeSequenceEqual(first, second, null);
+        }
+
+        public static bool SafeSequenceEqual<T>(this IEnumerable<T> first, IEnumerable<T> second, IEqualityComparer<T> comparer)
         {
             var isEqual = false;
 
@@ -19,7 +21,7 @@ namespace System.Linq
             }
             else if (first != null && second != null)
             {
-                if (first.SequenceEqual(second))
+                if (first.SequenceEqual(second, comparer))
                 {
                     isEqual = true;
                 }
@@ -37,13 +39,23 @@ namespace System.Linq
         /// <returns>true if the two source sequences are of equal length and contain equal elements, default equality comparer for their type; otherwise, false.</returns>
         public static bool SequenceEqualUnordered<T>(this IEnumerable<T> first, IEnumerable<T> second)
         {
-            if (first == null)
-                return second == null;
-            if (second == null)
-                return false;
+            return SequenceEqualUnordered(first, second, null);
+        }
+
+        /// <summary>
+        /// Determines whether two sequences contain the same items. Null-safe comparison.
+        /// </summary>
+        /// <param name="first">An IEnumerable<T> to compare to second</param>
+        /// <param name="second">An IEnumerable<T> to compare to the first sequence.</param>
+        /// <typeparam name="T">The type of the elements of the input sequences.</typeparam>
+        /// <returns>true if the two source sequences are of equal length and contain equal elements, default equality comparer for their type; otherwise, false.</returns>
+        public static bool SequenceEqualUnordered<T>(this IEnumerable<T> first, IEnumerable<T> second, IEqualityComparer<T> comparer)
+        {
+            if (first == null) return second == null;
+            if (second == null) return false;
 
             return first.Count() == second.Count() 
-                && (!first.Except(second).Any() || !second.Except(first).Any());
+                && (!first.Except(second, comparer).Any() || !second.Except(first, comparer).Any());
         }
         
         /// <summary>
@@ -54,10 +66,7 @@ namespace System.Linq
         /// <param name="value">The item to be added to the list.</param>
         public static void Fill<T>(this IList<T> list, T value)
         {
-            if (list.Contains(value))
-            {
-                return;
-            }
+            if (list.Contains(value)) return;
 
             list.Add(value);
         }
@@ -130,7 +139,6 @@ namespace System.Linq
             return values;
         }
 
-        //[DebuggerStepThrough]
         public static IEnumerable<T> Each<T>(this IEnumerable<T> values, Action<T> eachAction)
         {
             foreach (T item in values)
@@ -141,7 +149,6 @@ namespace System.Linq
             return values;
         }
 
-        //[DebuggerStepThrough]
         public static IEnumerable Each(this IEnumerable values, Action<object> eachAction)
         {
             foreach (object item in values)

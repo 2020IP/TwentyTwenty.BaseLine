@@ -24,7 +24,7 @@ namespace TwentyTwenty.BaseLine
             Parameters = parameters;
         }
 
-        public int ErrorCode { get; } = -0;
+        public int ErrorCode { get; } = 0;
         public object[] Parameters { get; set; }
     }
 }
