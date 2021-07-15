@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace TwentyTwenty.BaseLine.RateLimiting
 {
@@ -81,6 +82,12 @@ namespace TwentyTwenty.BaseLine.RateLimiting
             public void Sleep()
             {
                 Thread.Sleep(0);
+            }
+
+            public async Task SleepAsync()
+            {
+                await Task.Yield();
+                // await Task.Delay(5).ConfigureAwait(false);
             }
         }
 

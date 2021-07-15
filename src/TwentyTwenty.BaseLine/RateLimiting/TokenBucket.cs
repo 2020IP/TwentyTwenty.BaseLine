@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TwentyTwenty.BaseLine.RateLimiting
@@ -23,7 +24,8 @@ namespace TwentyTwenty.BaseLine.RateLimiting
         private readonly IRefillStrategy _refillStrategy;
         private readonly ISleepStrategy _sleepStrategy;
         private long _size;
-        private readonly object _syncRoot = new object();
+        //private readonly object _syncRoot = new object();
+        private readonly SemaphoreSlim _mutex = new SemaphoreSlim(1, 1);
 
         public TokenBucket(long capacity, IRefillStrategy refillStrategy, ISleepStrategy sleepStrategy)
         {
@@ -56,7 +58,8 @@ namespace TwentyTwenty.BaseLine.RateLimiting
             if (numTokens > _capacity)
                 throw new ArgumentOutOfRangeException("numTokens", "Number of tokens to consume must be less than the capacity of the bucket.");
 
-            lock (_syncRoot)
+            _mutex.Wait();
+            try
             {
                 // Give the refill strategy a chance to add tokens if it needs to, but beware of overflow
                 var newTokens = Math.Min(_capacity, Math.Max(0, _refillStrategy.Refill()));
@@ -67,6 +70,37 @@ namespace TwentyTwenty.BaseLine.RateLimiting
                 // Now try to consume some tokens
                 _size -= numTokens;
                 return true;
+            }
+            finally
+            {
+                _mutex.Release();
+            }
+        }
+
+        public async Task<bool> TryConsumeAsync(long numTokens)
+        {
+            if (numTokens <= 0)
+                throw new ArgumentOutOfRangeException("numTokens", "Number of tokens to consume must be positive");
+            if (numTokens > _capacity)
+                throw new ArgumentOutOfRangeException("numTokens", "Number of tokens to consume must be less than the capacity of the bucket.");
+
+            await _mutex.WaitAsync();
+            try
+            {
+                // Give the refill strategy a chance to add tokens if it needs to, but beware of overflow
+                long refilledTokens = await _refillStrategy.RefillAsync().ConfigureAwait(false);
+                var newTokens = Math.Min(_capacity, Math.Max(0, refilledTokens));
+                _size = Math.Max(0, Math.Min(_size + newTokens, _capacity));
+
+                if (numTokens > _size) return false;
+
+                // Now try to consume some tokens
+                _size -= numTokens;
+                return true;
+            }
+            finally
+            {
+                _mutex.Release();
             }
         }
 
@@ -94,8 +128,10 @@ namespace TwentyTwenty.BaseLine.RateLimiting
         /// <param name="numTokens">The number of tokens to consume from the bucket, must be a positive number.</param>
         public void Consume(long numTokens)
         {
-            while (true) {
-                if (TryConsume(numTokens)) {
+            while (true) 
+            {
+                if (TryConsume(numTokens)) 
+                {
                     break;
                 }
 
@@ -108,9 +144,17 @@ namespace TwentyTwenty.BaseLine.RateLimiting
         /// <param name="numTokens">The number of tokens to consume from the bucket, must be a positive number.</param>
         /// <returns>A task that returns once the requested tokens have been consumed</returns>
         /// </summary>
-        public Task ConsumeAsync(long numTokens)
+        public async Task ConsumeAsync(long numTokens)
         {
-            return Task.Factory.StartNew(() => Consume(numTokens));
+            while (true) 
+            {
+                if (await TryConsumeAsync(numTokens).ConfigureAwait(false))
+                {
+                    break;
+                }
+
+                await _sleepStrategy.SleepAsync().ConfigureAwait(false);
+            }
         }
     }
 }

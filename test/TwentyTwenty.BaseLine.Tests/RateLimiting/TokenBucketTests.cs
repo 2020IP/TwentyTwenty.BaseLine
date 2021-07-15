@@ -4,6 +4,7 @@ using System.Threading;
 using TwentyTwenty.BaseLine.RateLimiting;
 using Xunit;
 using Moq;
+using System.Threading.Tasks;
 
 namespace TwentyTwenty.BaseLine.Tests.RateLimiting
 {
@@ -144,12 +145,12 @@ namespace TwentyTwenty.BaseLine.Tests.RateLimiting
         public void ConsumeAsyncWhenTokenUnavailable()
         {
             _sleepStrategy
-                .Setup(s => s.Sleep())
+                .Setup(s => s.SleepAsync())
+                .Returns(Task.CompletedTask)
                 .Callback(_refillStrategy.AddToken)
                 .Verifiable();
 
             _bucket.ConsumeAsync().Wait();
-
             _sleepStrategy.Verify();
         }
 
@@ -172,7 +173,8 @@ namespace TwentyTwenty.BaseLine.Tests.RateLimiting
         {
             const int tokensToConsume = 7;
             _sleepStrategy
-                .Setup(s => s.Sleep())
+                .Setup(s => s.SleepAsync())
+                .Returns(Task.CompletedTask)
                 .Callback(() => _refillStrategy.AddTokens(tokensToConsume))
                 .Verifiable();
 
@@ -200,6 +202,13 @@ namespace TwentyTwenty.BaseLine.Tests.RateLimiting
             public void AddTokens(long numTokens)
             {
                 _numTokensToAdd += numTokens;
+            }
+
+            public Task<long> RefillAsync()
+            {
+                var numTokens = _numTokensToAdd;
+                _numTokensToAdd = 0;
+                return Task.FromResult(numTokens);
             }
         }
     }

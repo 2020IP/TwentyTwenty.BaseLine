@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace TwentyTwenty.BaseLine.RateLimiting
 {
@@ -13,7 +15,7 @@ namespace TwentyTwenty.BaseLine.RateLimiting
         private readonly long _numTokens;
         private readonly long _periodInTicks;
         private long _nextRefillTime;
-        private readonly object _syncRoot = new object();
+        private readonly SemaphoreSlim _mutex = new SemaphoreSlim(1, 1);
 
         /// <summary>Create a FixedIntervalRefillStrategy.</summary>
         /// <param name="ticker">A ticker to use to measure time.</param>
@@ -29,7 +31,9 @@ namespace TwentyTwenty.BaseLine.RateLimiting
 
         public long Refill()
         {
-            lock (_syncRoot)
+            _mutex.Wait();
+
+            try
             {
                 var now = _ticker.Read();
                 if (now < _nextRefillTime)
@@ -39,6 +43,31 @@ namespace TwentyTwenty.BaseLine.RateLimiting
                 var refillAmount = Math.Max((now - _nextRefillTime) / _periodInTicks, 1);
                 _nextRefillTime += _periodInTicks * refillAmount;
                 return _numTokens * refillAmount;
+            }
+            finally
+            {
+                _mutex.Release();
+            }
+        }
+
+        public async Task<long> RefillAsync()
+        {
+            await _mutex.WaitAsync().ConfigureAwait(false);
+
+            try
+            {
+                var now = _ticker.Read();
+                if (now < _nextRefillTime)
+                {
+                    return 0;
+                }
+                var refillAmount = Math.Max((now - _nextRefillTime) / _periodInTicks, 1);
+                _nextRefillTime += _periodInTicks * refillAmount;
+                return _numTokens * refillAmount;
+            }
+            finally
+            {
+                _mutex.Release();
             }
         }
     }
