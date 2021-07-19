@@ -15,7 +15,7 @@ namespace TwentyTwenty.BaseLine.RateLimiting
         /// is returned, otherwise <code>false</code> is returned.
         /// </summary>
         /// <returns><code>true</code> if the tokens were consumed, <code>false</code> otherwise.</returns>
-        bool TryConsume();
+        Task<bool> TryConsume();
 
         /// <summary>
         /// Attempt to consume a specified number of tokens from the bucket.  If the tokens were consumed then <code>true</code>
@@ -23,31 +23,19 @@ namespace TwentyTwenty.BaseLine.RateLimiting
         /// </summary>
         /// <param name="numTokens">The number of tokens to consume from the bucket, must be a positive number.</param>
         /// <returns><code>true</code> if the tokens were consumed, <code>false</code> otherwise.</returns>
-        bool TryConsume(long numTokens);
-
-        /// <summary>
-        /// Consume a single token from the bucket.  If no token is currently available then this method will block until a
-        /// token becomes available.
-        /// </summary>
-        void Consume();
+        Task<bool> TryConsume(long numTokens);
 
         /// <summary>
         /// Consume a single token from the bucket asynchronously. This method does not block
         /// <returns>A task that returns once a token has been consumed</returns>
         /// </summary>
-        Task ConsumeAsync();
-
-        /// <summary>
-        /// Consumes multiple tokens from the bucket.  If enough tokens are not currently available then this method will block
-        /// </summary>
-        /// <param name="numTokens">The number of tokens to consume from the bucket, must be a positive number.</param>
-        void Consume(long numTokens);
+        Task Consume();
 
         /// <summary>
         /// Consume multiple tokens from the bucket asynchronously. This method does not block
         /// <param name="numTokens">The number of tokens to consume from the bucket, must be a positive number.</param>
         /// <returns>A task that returns once the requested tokens have been consumed</returns>
         /// </summary>
-        Task ConsumeAsync(long numTokens);
+        Task Consume(long numTokens);
     }
 }

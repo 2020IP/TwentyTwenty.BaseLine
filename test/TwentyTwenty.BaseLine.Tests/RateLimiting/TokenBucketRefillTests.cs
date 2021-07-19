@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using TwentyTwenty.BaseLine.RateLimiting;
 using Xunit;
 
@@ -9,7 +10,7 @@ namespace TwentyTwenty.BaseLine.Tests.RateLimiting
     public class TokenBucketRefillTests
     {
         [Fact]//, Explicit("Long Running")]
-        public void RateLimitTests()
+        public async Task RateLimitTests()
         {
             const int totalConsumes = 500;
             const int refillRate = 40;
@@ -25,7 +26,7 @@ namespace TwentyTwenty.BaseLine.Tests.RateLimiting
             for (var i = 0; i < totalConsumes; i++)
             {
                 if (i % 3 == 0) Thread.Sleep(1000 / refillRate * 2);
-                tokenBucket.Consume();
+                await tokenBucket.Consume();
             }
 
             sw.Stop();

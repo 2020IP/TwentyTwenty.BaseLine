@@ -25,160 +25,106 @@ namespace TwentyTwenty.BaseLine.Tests.RateLimiting
         }
 
         [Fact]
-        public void TryConsumeZeroTokens()
+        public async Task TryConsumeZeroTokens()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() =>
-            {
-                _bucket.TryConsume(0);
-            });
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => _bucket.TryConsume(0));
         }
 
         [Fact]
-        public void TryConsumeNegativeTokens()
+        public async Task TryConsumeNegativeTokens()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() =>
-            {
-                _bucket.TryConsume(-1);
-            });
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => _bucket.TryConsume(-1));
         }
 
         [Fact]
-        public void TryConsumeMoreThanCapacityTokens()
+        public async Task TryConsumeMoreThanCapacityTokens()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() =>
-            {
-                _bucket.TryConsume(100);
-            });
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => _bucket.TryConsume(100));
         }
 
         [Fact]
-        public void BucketInitiallyEmpty()
+        public async Task BucketInitiallyEmpty()
         {
-            Assert.False(_bucket.TryConsume());
+            Assert.False(await _bucket.TryConsume());
         }
 
         [Fact]
-        public void TryConsumeOneToken()
+        public async Task TryConsumeOneToken()
         {
             _refillStrategy.AddToken();
-            Assert.True(_bucket.TryConsume());
+            Assert.True(await _bucket.TryConsume());
         }
 
         [Fact]
-        public void TryConsumeMoreTokensThanAreAvailable()
+        public async Task TryConsumeMoreTokensThanAreAvailable()
         {
             _refillStrategy.AddToken();
-            Assert.False(_bucket.TryConsume(2));
+            Assert.False(await _bucket.TryConsume(2));
         }
 
         [Fact]
-        public void TryRefillMoreThanCapacityTokens()
+        public async Task TryRefillMoreThanCapacityTokens()
         {
             _refillStrategy.AddTokens(Capacity + 1);
-            Assert.True(_bucket.TryConsume(Capacity));
-            Assert.False(_bucket.TryConsume(1));
+            Assert.True(await _bucket.TryConsume(Capacity));
+            Assert.False(await _bucket.TryConsume(1));
         }
 
         [Fact]
-        public void TryRefillWithTooManyTokens()
+        public async Task TryRefillWithTooManyTokens()
         {
             _refillStrategy.AddTokens(Capacity);
-            Assert.True(_bucket.TryConsume());
+            Assert.True(await _bucket.TryConsume());
 
             _refillStrategy.AddTokens(long.MaxValue);
-            Assert.True(_bucket.TryConsume(Capacity));
-            Assert.False(_bucket.TryConsume(1));
+            Assert.True(await _bucket.TryConsume(Capacity));
+            Assert.False(await _bucket.TryConsume(1));
         }
 
         [Fact(Timeout = ConsumeTimeout)]
-        public void ConsumeWhenTokenAvailable()
+        public async Task ConsumeWhenTokenAvailable()
         {
             _refillStrategy.AddToken();
-            _bucket.Consume();
+            await _bucket.Consume();
 
             _sleepStrategy.Verify(s => s.Sleep(), Times.Never());
         }
 
         [Fact(Timeout = ConsumeTimeout)]
-        public void ConsumeAsyncWhenTokenAvailable()
-        {
-            _refillStrategy.AddToken();
-            _bucket.ConsumeAsync().Wait();
-
-            _sleepStrategy.Verify(s => s.Sleep(), Times.Never());
-        }
-
-        [Fact(Timeout = ConsumeTimeout)]
-        public void ConsumeWhenTokensAvailable()
+        public async Task ConsumeWhenTokensAvailable()
         {
             const int tokensToConsume = 2;
             _refillStrategy.AddTokens(tokensToConsume);
-            _bucket.Consume(tokensToConsume);
+            await _bucket.Consume(tokensToConsume);
 
             _sleepStrategy.Verify(s => s.Sleep(), Times.Never());
         }
 
         [Fact(Timeout = ConsumeTimeout)]
-        public void ConsumeAsyncWhenTokensAvailable()
-        {
-            const int tokensToConsume = 2;
-            _refillStrategy.AddTokens(tokensToConsume);
-            _bucket.ConsumeAsync(tokensToConsume).Wait();
-
-            _sleepStrategy.Verify(s => s.Sleep(), Times.Never());
-        }
-
-        [Fact(Timeout = ConsumeTimeout)]
-        public void ConsumeWhenTokenUnavailable()
+        public async Task ConsumeWhenTokenUnavailable()
         {
             _sleepStrategy
                 .Setup(s => s.Sleep())
-                .Callback(_refillStrategy.AddToken)
-                .Verifiable();
-
-            _bucket.Consume();
-
-            _sleepStrategy.Verify();
-        }
-
-        [Fact(Timeout = ConsumeTimeout)]
-        public void ConsumeAsyncWhenTokenUnavailable()
-        {
-            _sleepStrategy
-                .Setup(s => s.SleepAsync())
                 .Returns(Task.CompletedTask)
                 .Callback(_refillStrategy.AddToken)
                 .Verifiable();
 
-            _bucket.ConsumeAsync().Wait();
+            await _bucket.Consume();
+
             _sleepStrategy.Verify();
         }
 
         [Fact(Timeout = ConsumeTimeout)]
-        public void ConsumeWhenTokensUnavailable()
+        public async Task ConsumeWhenTokensUnavailable()
         {
             const int tokensToConsume = 7;
             _sleepStrategy
                 .Setup(s => s.Sleep())
-                .Callback(() => _refillStrategy.AddTokens(tokensToConsume))
-                .Verifiable();
-
-            _bucket.Consume(tokensToConsume);
-
-            _sleepStrategy.Verify();
-        }
-
-        [Fact(Timeout = ConsumeTimeout)]
-        public void ConsumeAsyncWhenTokensUnavailable()
-        {
-            const int tokensToConsume = 7;
-            _sleepStrategy
-                .Setup(s => s.SleepAsync())
                 .Returns(Task.CompletedTask)
                 .Callback(() => _refillStrategy.AddTokens(tokensToConsume))
                 .Verifiable();
 
-            _bucket.ConsumeAsync(tokensToConsume).Wait();
+            await _bucket.Consume(tokensToConsume);
 
             _sleepStrategy.Verify();
         }

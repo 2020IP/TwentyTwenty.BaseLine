@@ -79,12 +79,7 @@ namespace TwentyTwenty.BaseLine.RateLimiting
 
         private class YieldingSleepStrategy : ISleepStrategy
         {
-            public void Sleep()
-            {
-                Thread.Sleep(0);
-            }
-
-            public async Task SleepAsync()
+            public async Task Sleep()
             {
                 await Task.Yield();
                 // await Task.Delay(5).ConfigureAwait(false);

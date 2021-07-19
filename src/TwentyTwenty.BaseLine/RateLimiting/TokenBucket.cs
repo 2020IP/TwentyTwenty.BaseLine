@@ -24,7 +24,6 @@ namespace TwentyTwenty.BaseLine.RateLimiting
         private readonly IRefillStrategy _refillStrategy;
         private readonly ISleepStrategy _sleepStrategy;
         private long _size;
-        //private readonly object _syncRoot = new object();
         private readonly SemaphoreSlim _mutex = new SemaphoreSlim(1, 1);
 
         public TokenBucket(long capacity, IRefillStrategy refillStrategy, ISleepStrategy sleepStrategy)
@@ -35,49 +34,10 @@ namespace TwentyTwenty.BaseLine.RateLimiting
             _size = 0;
         }
 
-        /// <summary>
-        /// Attempt to consume a single token from the bucket.  If it was consumed then <code>true</code>
-        /// is returned, otherwise <code>false</code> is returned.
-        /// </summary>
-        /// <returns><code>true</code> if the tokens were consumed, <code>false</code> otherwise.</returns>
-        public bool TryConsume()
-        {
-            return TryConsume(1);
-        }
+        public Task<bool> TryConsume()
+            => TryConsume(1);
 
-        /// <summary>
-        /// Attempt to consume a specified number of tokens from the bucket.  If the tokens were consumed then <code>true</code>
-        /// is returned, otherwise <code>false</code> is returned.
-        /// </summary>
-        /// <param name="numTokens">The number of tokens to consume from the bucket, must be a positive number.</param>
-        /// <returns><code>true</code> if the tokens were consumed, <code>false</code> otherwise.</returns>
-        public bool TryConsume(long numTokens)
-        {
-            if (numTokens <= 0)
-                throw new ArgumentOutOfRangeException("numTokens", "Number of tokens to consume must be positive");
-            if (numTokens > _capacity)
-                throw new ArgumentOutOfRangeException("numTokens", "Number of tokens to consume must be less than the capacity of the bucket.");
-
-            _mutex.Wait();
-            try
-            {
-                // Give the refill strategy a chance to add tokens if it needs to, but beware of overflow
-                var newTokens = Math.Min(_capacity, Math.Max(0, _refillStrategy.Refill()));
-                _size = Math.Max(0, Math.Min(_size + newTokens, _capacity));
-
-                if (numTokens > _size) return false;
-
-                // Now try to consume some tokens
-                _size -= numTokens;
-                return true;
-            }
-            finally
-            {
-                _mutex.Release();
-            }
-        }
-
-        public async Task<bool> TryConsumeAsync(long numTokens)
+        public async Task<bool> TryConsume(long numTokens)
         {
             if (numTokens <= 0)
                 throw new ArgumentOutOfRangeException("numTokens", "Number of tokens to consume must be positive");
@@ -88,7 +48,7 @@ namespace TwentyTwenty.BaseLine.RateLimiting
             try
             {
                 // Give the refill strategy a chance to add tokens if it needs to, but beware of overflow
-                long refilledTokens = await _refillStrategy.RefillAsync().ConfigureAwait(false);
+                var refilledTokens = await _refillStrategy.RefillAsync().ConfigureAwait(false);
                 var newTokens = Math.Min(_capacity, Math.Max(0, refilledTokens));
                 _size = Math.Max(0, Math.Min(_size + newTokens, _capacity));
 
@@ -105,55 +65,26 @@ namespace TwentyTwenty.BaseLine.RateLimiting
         }
 
         /// <summary>
-        /// Consume a single token from the bucket.  If no token is currently available then this method will block until a
-        /// token becomes available.
-        /// </summary>
-        public void Consume()
-        {
-            Consume(1);
-        }
-
-        /// <summary>
         /// Consume a single token from the bucket asynchronously. This method does not block
         /// <returns>A task that returns once a token has been consumed</returns>
         /// </summary>
-        public Task ConsumeAsync()
-        {
-            return ConsumeAsync(1);
-        }
-
-        /// <summary>
-        /// Consumes multiple tokens from the bucket.  If enough tokens are not currently available then this method will block
-        /// </summary>
-        /// <param name="numTokens">The number of tokens to consume from the bucket, must be a positive number.</param>
-        public void Consume(long numTokens)
-        {
-            while (true) 
-            {
-                if (TryConsume(numTokens)) 
-                {
-                    break;
-                }
-
-                _sleepStrategy.Sleep();
-            }
-        }
+        public Task Consume() => Consume(1);
 
         /// <summary>
         /// Consume multiple tokens from the bucket asynchronously. This method does not block
         /// <param name="numTokens">The number of tokens to consume from the bucket, must be a positive number.</param>
         /// <returns>A task that returns once the requested tokens have been consumed</returns>
         /// </summary>
-        public async Task ConsumeAsync(long numTokens)
+        public async Task Consume(long numTokens)
         {
             while (true) 
             {
-                if (await TryConsumeAsync(numTokens).ConfigureAwait(false))
+                if (await TryConsume(numTokens).ConfigureAwait(false))
                 {
                     break;
                 }
 
-                await _sleepStrategy.SleepAsync().ConfigureAwait(false);
+                await _sleepStrategy.Sleep().ConfigureAwait(false);
             }
         }
     }
