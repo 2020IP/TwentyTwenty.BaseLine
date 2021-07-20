@@ -87,7 +87,7 @@ namespace TwentyTwenty.BaseLine.Tests.RateLimiting
             _refillStrategy.AddToken();
             await _bucket.Consume();
 
-            _sleepStrategy.Verify(s => s.Sleep(), Times.Never());
+            _sleepStrategy.Verify(s => s.Sleep(It.IsAny<CancellationToken>()), Times.Never());
         }
 
         [Fact(Timeout = ConsumeTimeout)]
@@ -97,14 +97,14 @@ namespace TwentyTwenty.BaseLine.Tests.RateLimiting
             _refillStrategy.AddTokens(tokensToConsume);
             await _bucket.Consume(tokensToConsume);
 
-            _sleepStrategy.Verify(s => s.Sleep(), Times.Never());
+            _sleepStrategy.Verify(s => s.Sleep(It.IsAny<CancellationToken>()), Times.Never());
         }
 
         [Fact(Timeout = ConsumeTimeout)]
         public async Task ConsumeWhenTokenUnavailable()
         {
             _sleepStrategy
-                .Setup(s => s.Sleep())
+                .Setup(s => s.Sleep(It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask)
                 .Callback(_refillStrategy.AddToken)
                 .Verifiable();
@@ -119,7 +119,7 @@ namespace TwentyTwenty.BaseLine.Tests.RateLimiting
         {
             const int tokensToConsume = 7;
             _sleepStrategy
-                .Setup(s => s.Sleep())
+                .Setup(s => s.Sleep(It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask)
                 .Callback(() => _refillStrategy.AddTokens(tokensToConsume))
                 .Verifiable();

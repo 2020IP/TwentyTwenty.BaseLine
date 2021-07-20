@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TwentyTwenty.BaseLine.RateLimiting
@@ -29,13 +30,13 @@ namespace TwentyTwenty.BaseLine.RateLimiting
         /// Consume a single token from the bucket asynchronously. This method does not block
         /// <returns>A task that returns once a token has been consumed</returns>
         /// </summary>
-        Task Consume();
+        Task Consume(CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Consume multiple tokens from the bucket asynchronously. This method does not block
         /// <param name="numTokens">The number of tokens to consume from the bucket, must be a positive number.</param>
         /// <returns>A task that returns once the requested tokens have been consumed</returns>
         /// </summary>
-        Task Consume(long numTokens);
+        Task Consume(long numTokens, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

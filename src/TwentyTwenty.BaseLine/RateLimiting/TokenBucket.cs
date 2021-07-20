@@ -68,14 +68,14 @@ namespace TwentyTwenty.BaseLine.RateLimiting
         /// Consume a single token from the bucket asynchronously. This method does not block
         /// <returns>A task that returns once a token has been consumed</returns>
         /// </summary>
-        public Task Consume() => Consume(1);
+        public Task Consume(CancellationToken cancellationToken = default(CancellationToken)) => Consume(1);
 
         /// <summary>
         /// Consume multiple tokens from the bucket asynchronously. This method does not block
         /// <param name="numTokens">The number of tokens to consume from the bucket, must be a positive number.</param>
         /// <returns>A task that returns once the requested tokens have been consumed</returns>
         /// </summary>
-        public async Task Consume(long numTokens)
+        public async Task Consume(long numTokens, CancellationToken cancellationToken = default(CancellationToken))
         {
             while (true) 
             {
@@ -84,7 +84,8 @@ namespace TwentyTwenty.BaseLine.RateLimiting
                     break;
                 }
 
-                await _sleepStrategy.Sleep().ConfigureAwait(false);
+                await _sleepStrategy.Sleep(cancellationToken).ConfigureAwait(false);
+                cancellationToken.ThrowIfCancellationRequested();
             }
         }
     }
