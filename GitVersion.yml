@@ -1,5 +1,5 @@
 branches:
   develop:
-    tag: ci
+    label: ci
 ignore:
   sha: []
