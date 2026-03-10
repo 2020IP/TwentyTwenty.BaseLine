@@ -7,7 +7,7 @@ before_build:
   - ps: dotnet-gitversion /l console /output buildserver
   - cmd: dotnet restore ./src/TwentyTwenty.BaseLine/TwentyTwenty.BaseLine.csproj
 build_script:
-  - cmd: dotnet pack ./src/TwentyTwenty.BaseLine/TwentyTwenty.BaseLine.csproj --no-restore -c Release -p:PackageVersion=%GitVersion_NuGetVersion%
+  - cmd: dotnet pack ./src/TwentyTwenty.BaseLine/TwentyTwenty.BaseLine.csproj --no-restore -c Release -p:PackageVersion=%GitVersion_MajorMinorPatch%
 test: off
 artifacts:
   - path: '**\*.nupkg'
@@ -20,7 +20,7 @@ deploy:
       appveyor_repo_tag: true
 
   - provider: GitHub
-    release: "%GitVersion_NuGetVersion%"
+    release: "%GitVersion_MajorMinorPatch%"
     description: 'TwentyTwenty.BaseLine'
     auth_token:
       secure: jRySGaPcL/02436nnSFXkf/7wkuamJan+trlbInaAs3NNXCv3S+7IvEiMGvHURPgBBxkMRkB33G0uIeRZ5gQCgSn+Eh2zXORQqSGnWQ0qscw9u5b7OPw3Nyl9/yG2wpq
